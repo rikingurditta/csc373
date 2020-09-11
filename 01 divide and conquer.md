@@ -21,9 +21,11 @@ There is no formal definition of what it means for an algorithm to use a divide 
 A useful tool for analyzing divide and conquer algorithms is the Master Theorem, which helps classify functions written as recurrence relations into complexity classes.
 
 If $a, b \geq 1$ are constants, $f: \N \to \R^+$ is a function, and $T$ is defined by the recurrence relation
+
 $$
 T(n) = aT(n/b) + f(n)
 $$
+
 Then:
 
 - $T \in \Theta(n^{\log_b a})$ if $f \in \mathcal O(n^{\log_b a - \epsilon})$ for some $\epsilon$
@@ -93,12 +95,15 @@ so that $x = x_1 \cdot b^{n/2} + x_2$. We similarly define $y_1$ and $y_2$ so th
 **Conquer/Combine:**
 
 With this split, algebraically, we know that
+
 $$
 xy = x_1 y_1 \cdot b^n + (x_1 y_2 + x_2 y_1) \cdot b^{n/2} + x_2 y_2
 $$
+
 Notice that this requires 4 $n/2$-digit multiplication operations.
 
 However, we can rewrite $x_1 y_2 + x_2 y_1$ as $(𝑥_1 + 𝑥_2)(𝑦_1 + 𝑦_2) − 𝑥_1 𝑦_1− 𝑥_2 𝑦_2$. If we compute $z_1 = x_1 y_1$ and $z_2 = x_2 y_2$ ahead of time, then
+
 $$
 xy = z_1 \cdot b^n + ((x_1 + x_2)(y_1 + y_2) - z_1 - z_2) \cdot b^{n/2} + z_2
 $$
