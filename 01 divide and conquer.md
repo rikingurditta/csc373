@@ -1,6 +1,9 @@
 # Divide and Conquer
 
 $$
+\newcommand{\ds}{\displaystyle}
+\newcommand{\curlies}[1]{\left\lbrace #1 \right\rbrace}
+
 \newcommand{BigO}{\mathcal{O}}
 $$
 
@@ -47,12 +50,12 @@ The brute force solution would be to check all $\binom{n}{2}$ pairs, but we can 
 
 **Divide**: break array into two equal halves $x$ and $y$
 
-**Conquer**: count inversions in each half recursively
+**Conquer**: sort and count inversions in each half recursively
 
 **Combine**:
 
 - count inversions with one entry in $x$ and one entry in $y$
-  - [...]
+  - runs in $O(n)$ time (supposedly $2n$)
 
 As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) = 2T(n/2) + 2n$, so using the master theorem $T \in \Theta(n \log n)$
 
@@ -65,9 +68,10 @@ As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) 
 **Combine**:
 
 - check points from solutions of both halves
-- take points that are within $\min(\delta_L, \delta_R)$ of $L$
-  - sort these points by $y$ coordinate
-  - compare them pairwise
+- let $M$ be the list of points that are within $\delta = \min(\delta_L, \delta_R)$ of $L$
+  - sort $M$ by $y$ coordinate
+  - because of *geometry*, we only need to compare each point to a certain number of other points in $M$ (usually, we compare each point to the next 7) to check if there is a pair that is less than $\delta$ apart
+  - since each point in $M$ only needs to be compared to 7 others, this step takes $O(7|M|) \approx O(n)$ time
 
 ## Example: Karatsuba's Algorithm (Integer Multiplication)
 
@@ -85,10 +89,25 @@ $$
 
 so that $x = x_1 \cdot b^{n/2} + x_2$. We similarly define $y_1$ and $y_2$ so that $y = y_1 \cdot b^{n/2} + y_2$.
 
-**Conquer:**
+**Conquer/Combine:**
 
+With this split, algebraically, we know that
+$$
+xy = x_1 y_1 \cdot b^n + (x_1 y_2 + x_2 y_1) \cdot b^{n/2} + x_2 y_2
+$$
+Notice that this requires 4 $n/2$-digit multiplication operations.
 
+However, we can rewrite $x_1 y_2 + x_2 y_1$ as $(𝑥_1 + 𝑥_2)(𝑦_1 + 𝑦_2) − 𝑥_1 𝑦_1− 𝑥_2 𝑦_2$. If we compute $z_1 = x_1 y_1$ and $z_2 = x_2 y_2$ ahead of time, then
+$$
+xy = z_1 \cdot b^n + ((x_1 + x_2)(y_1 + y_2) - z_1 - z_2) \cdot b^{n/2} + z_2
+$$
 
-## Example: Strassen's Algorithm (Matrix Multiplication)
+This expression requires a few more additions, but it only requires 3 $n/2$-digit multiplications!
+
+We can do this recursively for each $x_i y_j$ as well, thus making it a divide and conquer algorithm.
+
+Using the Master theorem, this algorithm runs in $\BigO(n^{\log_2 3})$ time.
+
+### Example: Strassen's Algorithm (Matrix Multiplication)
 
 Uses the concepts of Karatsuba's algorithm to find a fast way to multiply two $n \times n$ matrices
