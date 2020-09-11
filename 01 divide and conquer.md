@@ -3,6 +3,7 @@
 $$
 \newcommand{\ds}{\displaystyle}
 \newcommand{\curlies}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 
 \newcommand{BigO}{\mathcal{O}}
 $$
@@ -71,7 +72,7 @@ As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) 
 - let $M$ be the list of points that are within $\delta = \min(\delta_L, \delta_R)$ of $L$
   - sort $M$ by $y$ coordinate
   - because of *geometry*, we only need to compare each point to a certain number of other points in $M$ (usually, we compare each point to the next 7) to check if there is a pair that is less than $\delta$ apart
-  - since each point in $M$ only needs to be compared to 7 others, this step takes $O(7|M|) \approx O(n)$ time
+  - since each point in $M$ only needs to be compared to 7 others, this step takes $O(7\abs{M}) \approx O(n)$ time
 
 ## Example: Karatsuba's Algorithm (Integer Multiplication)
 
