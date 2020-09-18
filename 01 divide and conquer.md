@@ -32,7 +32,7 @@ Then:
 - $T \in \Theta(n^{\log_b a} \log n)$ if $f \in \Theta(n^{\log_b a})$
 - $T \in \Theta(f(n))$ if $f \in \Omega(n^{\log_b a + \epsilon})$ for some $\epsilon$ and if $a f(n/b) < cf(n)$ for $c < 1$ and sufficiently large $n$
 
-## Example: Counting Inversions
+## Counting Inversions
 
 Given an array $a$ of length $n$, count the number of pairs $(i, j)$ such that $i < j$ but $a[i] > a[j]$.
 
@@ -62,7 +62,7 @@ The brute force solution would be to check all $\binom{n}{2}$ pairs, but we can 
 
 As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) = 2T(n/2) + 2n$, so using the master theorem $T \in \Theta(n \log n)$
 
-## Example: Closest Pair in $\mathbb R^2$
+## Closest Pair in $\mathbb R^2$
 
 **Divide**: Divide set of points into equal halves by drawing a vertical line $L$
 
@@ -76,7 +76,7 @@ As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) 
   - because of *geometry*, we only need to compare each point to a certain number of other points in $M$ (usually, we compare each point to the next 7) to check if there is a pair that is less than $\delta$ apart
   - since each point in $M$ only needs to be compared to 7 others, this step takes $O(7\abs{M}) \approx O(n)$ time
 
-## Example: Karatsuba's Algorithm (Integer Multiplication)
+## Karatsuba's Algorithm (Integer Multiplication)
 
 This is a fast way to multiply two $n$-digit integers $x$ and $y$ (the number of digits is relevant because computers work in bits)
 
@@ -117,3 +117,60 @@ Using the Master theorem, this algorithm runs in $\BigO(n^{\log_2 3})$ time.
 ### Example: Strassen's Algorithm (Matrix Multiplication)
 
 Uses the concepts of Karatsuba's algorithm to find a fast way to multiply two $n \times n$ matrices
+
+## Median and Selection
+
+The $k$-selection problem is to find the $k^\text{th}$ smallest element in an array $A$ of $n$ comparable elements.
+
+- if $k = 1$ then we are looking for the minimum
+- if $k = (n+1)/2$ then we are looking for the median
+- if $k = n$ then we are looking for the maximum
+
+We can solve the problem in:
+
+- $\BigO(nk)$ by modifying bubble sort
+- $\BigO(n\log(n))$ by sorting
+- $\BigO(n + k\log(n))$ by using a min-heap
+- $\BigO(k + n\log(k))$ by using a max heap
+
+But we can also do this in $\BigO(n)$ time, since selection is weaker than sorting!
+
+### QuickSelect
+
+Suppose the running time of QuickSelect on the array is $T(n)$
+
+1. Find a pivot $p$
+2. Divide $A$ into two subarrays:
+   - $A_\text{less}$ has every element $\leq p$
+   - $A_\text{more}$ has every element $> p$
+   - If $\abs{A_\text{less}} \geq k$, then return the $k^\text{th}$ smallest item in $A_\text{less}$, otherwise return the $(k - \abs{A_{less}})^\text{th}$ smallest in $A_\text{more}$
+
+This algorithm does not immediately help, as it could take $\BigO(n^2)$ time if the pivot does not reduce the size of the problem well. We want to choose a pivot that creates smaller subarrays.
+
+To find a good pivot:
+
+1. Arbitrarily divide $A$ into $n/5$ groups of $5$
+   - takes $\BigO(n)$ time
+2. Find the median for each of these groups
+   - takes constant time for each group, so $\BigO(n)$ time in total
+3. Find the $p^*$, the median of the medians
+   - takes $T(n/5)$ time
+   - $n/10$ medians are $\leq p^*$
+   - each median is $\geq$ at least 3 elements (from its group of 5) as well as $\leq$ at least 3 elements
+   - thus, $p^*$ is $\geq$ at least $3n/10$ elements, so $3n/10 \leq \abs{A_\text{less}}$ and similarly $3n/10 \leq \abs{A_\text{more}}$
+   - since $A_\text{less}$ and $A_\text{more}$ are complements, they both have size at most $7n/10$
+4. Use $p^*$ as the pivot and recurse
+   - takes $T(7n/10)$ time, since both subarrays have size at most $7n/10$
+
+Thus, this algorithm takes $\BigO(n) + T(n/5) + T(7n/10)$ time
+
+By Master Theorem, this is $\BigO(n)$. This is the best running time we can hope for to solve the $k$-selection problem, since we need at least $O(n)$ time to read the array!
+
+## Finding the best algorithm for a problem
+
+- Matrix multiplication has been improving very incrementally:
+  - 1969 (Strassen): $\BigO(n^{2.807})$
+  - 1990: $\BigO(n^{2.376})$
+  - 2013: $\BigO(n^{2.3729})$
+  - 2014: $\BigO(n^{2.3728639})$
+
