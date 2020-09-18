@@ -26,6 +26,35 @@
       .main-page-button-hidden {
         visibility: hidden;
       }
+      #sidebar {
+        display: none;
+        font-size: 14px;
+      }
+      .toc-list {
+        padding-left: 25px;
+      }
+      .main-page-button-hidden {
+        visibility: hidden;
+      }
+      @media only screen and (min-width: 1000px) {
+        #sidebar {
+            display: block;
+          position: relative;
+          float: left;
+          width: 250px;
+          /*left: calc((100% - 1000px) / 2);*/
+          min-height: calc(100vh - 140px);
+          padding-top: 10px;
+        }
+        main {
+          display: block;
+          position: relative;
+          float: left;
+          /*left: calc((100% - 1000px) / 2);*/
+          width: calc(100% - 250px);
+          margin: 0;
+        }
+      }
     </style>
 
 {% seo %}
@@ -52,6 +81,11 @@
           {% endif %}
         </header>
     </div>
+    <section id="sidebar">
+      {% unless page.url == "/index" or page.url == "/" %}
+        <div id="js-toc"></div>
+      {% endunless %}
+    </section>
 
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
@@ -69,6 +103,20 @@
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js"></script>
+    <script type="text/javascript">
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#js-toc',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: '#content',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3, h4, h5, h6',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+            orderedList: false,
+        });
+    </script>
 
     {% if site.google_analytics %}
       <script>
