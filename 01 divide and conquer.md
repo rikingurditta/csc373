@@ -5,7 +5,7 @@ $$
 \newcommand{\curlies}[1]{\left\lbrace #1 \right\rbrace}
 \newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 
-\newcommand{BigO}{\mathcal{O}}
+\newcommand{\BigO}{\mathcal{O}}
 $$
 
 ## Divide and Conquer Algorithms
@@ -28,7 +28,7 @@ $$
 
 Then:
 
-- $T \in \Theta(n^{\log_b a})$ if $f \in \mathcal O(n^{\log_b a - \epsilon})$ for some $\epsilon$
+- $T \in \Theta(n^{\log_b a})$ if $f \in \BigO(n^{\log_b a - \epsilon})$ for some $\epsilon$
 - $T \in \Theta(n^{\log_b a} \log n)$ if $f \in \Theta(n^{\log_b a})$
 - $T \in \Theta(f(n))$ if $f \in \Omega(n^{\log_b a + \epsilon})$ for some $\epsilon$ and if $a f(n/b) < cf(n)$ for $c < 1$ and sufficiently large $n$
 
@@ -58,7 +58,7 @@ The brute force solution would be to check all $\binom{n}{2}$ pairs, but we can 
 **Combine**:
 
 - count inversions with one entry in $x$ and one entry in $y$
-  - runs in $O(n)$ time (supposedly $2n$)
+  - runs in $\BigO(n)$ time (supposedly $2n$)
 
 As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) = 2T(n/2) + 2n$, so using the master theorem $T \in \Theta(n \log n)$
 
@@ -74,13 +74,13 @@ As a result, the runtime $T$ of the algorithm for an input of size $n$ is $T(n) 
 - let $M$ be the list of points that are within $\delta = \min(\delta_L, \delta_R)$ of $L$
   - sort $M$ by $y$ coordinate
   - because of *geometry*, we only need to compare each point to a certain number of other points in $M$ (usually, we compare each point to the next 7) to check if there is a pair that is less than $\delta$ apart
-  - since each point in $M$ only needs to be compared to 7 others, this step takes $O(7\abs{M}) \approx O(n)$ time
+  - since each point in $M$ only needs to be compared to 7 others, this step takes $\BigO(7\abs{M}) \approx \BigO(n)$ time
 
 ## Karatsuba's Algorithm (Integer Multiplication)
 
 This is a fast way to multiply two $n$-digit integers $x$ and $y$ (the number of digits is relevant because computers work in bits)
 
-The brute force algorithm needs $O(n^2)$ operations, which is pretty slow
+The brute force algorithm needs $\BigO(n^2)$ operations, which is pretty slow
 
 **Divide**: Divide each integer into two parts
 
@@ -164,7 +164,7 @@ To find a good pivot:
 
 Thus, this algorithm takes $\BigO(n) + T(n/5) + T(7n/10)$ time
 
-By Master Theorem, this is $\BigO(n)$. This is the best running time we can hope for to solve the $k$-selection problem, since we need at least $O(n)$ time to read the array!
+By Master Theorem, this is $\BigO(n)$. This is the best running time we can hope for to solve the $k$-selection problem, since we need at least $\BigO(n)$ time to read the array!
 
 ## Finding the best algorithm for a problem
 

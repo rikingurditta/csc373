@@ -5,14 +5,14 @@ $$
 \newcommand{\curlies}[1]{\left\lbrace #1 \right\rbrace}
 \newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 
-\newcommand{BigO}{\mathcal{O}}
+\newcommand{\BigO}{\mathcal{O}}
 $$
 
 ## Greedy Algorithms
 
 A **greedy algorithm** is one that makes choices that have the greatest immediate benefit to build up a solution to a maximization problem.
 
-Greedy algorithms are not necessary optimal, but sometimes are.
+Greedy algorithms are rarely optimal, but are often very good approximations.
 
 ## Interval Scheduling
 
@@ -93,7 +93,7 @@ In step 3, when scheduling job $j$, a new group in the partition is only created
 
 Using induction, we can extend this argument to show that the greedy algorithm is optimal.
 
-## Interval Graphs
+## Interval graphs
 
 Interval scheduling and partitioning can be interpreted as graph problems.
 
@@ -109,3 +109,114 @@ We can find the interval partitioning problem by **[colouring](https://en.wikipe
 Note that these two problems are NP-hard (probably can't be solved fast), yet our greedy solutions above are pretty fast. This is because the interval problems we solved have stronger conditions than general MIS and colouring problems.
 
 In general, a graph is an **[interval graph](https://en.wikipedia.org/wiki/Interval_graph)** if it can be represented as an interval problem. These are the graphs for which we can use our above greedy algorithms to solve the MIS and colouring problems quickly. We can also generalize these algorithms further to [chordal graphs](https://en.wikipedia.org/wiki/Chordal_graph).
+
+## Minimizing Lateness
+
+Suppose we have a single machine and a list of jobs $J$, and each job $j \in J$ requires $t_j$ units of time and is due by time $d_j$. If we schedule the job to start at $s_j$, then its finishing time is $f_j = s_j + t_j$. The **lateness** of $j$ is $\ell_j = \max\curlies{0, f_j - d_j}$.
+
+We want to minimize the lateness of the latest job, i.e. we want to minimize $\ds L = \max_{j \in J} \ell_j$.
+
+We need to find the best ordering of the jobs. Some natural orderings are:
+
+- shortest processing time first
+  - sort $J$ in ascending order of $t_j$
+  - doesn't work because longer jobs may have earlier deadlines
+- smallest slack first
+  - sort $J$ in ascending order of $d_j - t_j$
+  - jobs with smaller slack may have later deadlines
+- earliest deadline first
+  - sort $J$ in ascending order of $d_j$
+  - this one is optimal
+
+### Greedy algorithm
+
+1. Sort $J$ in increasing order of $d_j$
+2. Do jobs in order with no idle time in between
+
+### Greedy algorithm is optimal
+
+#### Inversions
+
+There is always an optimal solution without any idle time (i.e. time where no job is scheduled between two jobs), and the greedy algorithm does not have any idle time.
+
+Define an **inversion** to be a pair of jobs $(i, j)$ so that $d_i < d_j$ but $j$ is scheduled before $i$. Note that the earliest deadline first strategy will never result in any inversions.
+
+If a schedule with no idle time has at least one inversion, then it has an inversion $(i, j)$ where $i$ is scheduled immediately after $j$.
+
+#### Fixing inversions
+
+Consider swapping $i$ and $j$, changing the lateness $L$ to $L'$ and the individual latenesses $\ell_j$ and $\ell_j$ to $\ell_i'$ and $\ell_j'$ and similarly with the finish times. Then $f_i = f_j'$, so
+$$
+\ell_j' = f_j' - d_j = f_i - d_j \leq f_i - d_i = \ell_i
+$$
+
+Thus $\ell_j' \leq \ell_i$. We can also clearly see that $\ell_i' \leq \ell_i$, since $f_i'$ is earlier than $f_i$.
+
+Then, considering the lateness of the solution,
+
+$$
+L' = \max\curlies{\ell_i', \ell_j', \max_{k \notin\curlies{i, j}} \ell_k'}
+$$
+
+Since we did not reschedule any job $k \notin \curlies{i, j}$, $\ell_k = \ell_k'$, so
+$$
+\begin{align*}
+L' &= \max\curlies{\ell_i', \ell_j', \max_{k \notin \curlies{i, j}} \ell_k} \\
+&\leq \max\curlies{\ell_i, \max_{k \notin \curlies{i, j}} \ell_k} \tag{since $\ell_i', \ell_j' \leq \ell_i$} \\
+&= \max_{k \neq j} \ell_k \\
+&\leq \max_k \ell_k \\
+&= L
+\end{align*}
+$$
+So the lateness does not increase, but the number of inversions has decreased.
+
+#### Proof of optimality
+
+Now, suppose that the greedy algorithm, sorting by earliest deadline first, is not optimal. Consider an optimal schedule $S^*$ with the fewest inversions among all optimal schedules. Suppose without loss of generality that it does not have any idle time.
+
+Since the earliest deadline first algorithm is not optimal, $S^*$ must have at least one inversion. Then, by the work above, at least one inversion must be between adjacently scheduled jobs. This inversion can be fixed without increasing lateness, so we arrive at another schedule $T^*$ which has lateness at most the same as $S^*$, but with one fewer inversion. This is a contradiction, as we assumed that $S^*$ had the least inversions! So the greedy algorithm must be optimal.
+
+# Lossless Compression
+
+We have a document that is written with $n$ distinct symbols, and we want to compress it losslessly to use the minimum amount of space.
+
+In real life documents, some symbols (e.g. $a$, $e$, $r$, $s$) show up much more frequently than others (e.g. $x$, $q$, $z$), so we want to use shorter codes for more frequent symbols. However, if we use codes where other codes are prefixes, then this can become ambiguous. For example, if we encode $a$ with 0, $e$ with 1, and $r$ with $01$, then does 01 represent $r$ or $ae$?
+
+Thus we want a **prefix-free encoding**.
+
+### Greedy algorithm - Huffman coding
+
+1. Build a priority queue $Q$ of tree nodes, fill the queue with nodes $(x, f_x)$ of symbol $x$ and frequency $f_x$.
+2. While $\abs Q > 1$, extract the two lowest frequency nodes $n_0$ and $n_1$ from $Q$ and make them the children of a new node ($n_1$ on the left and $n_0$ on the right) whose frequency is $f_0 + f_1$, insert this new node back into $Q$
+3. Label the nodes based on the path to them from the route, with a 0 for every step left and 1 for every step right. Encode the document with the resulting code.
+
+![huffman tree.png](huffman tree.png)
+
+### Huffman coding is optimal
+
+Suppose $f_x$ and $\ell_x$ are the frequency and length of the code for a symbol $x$.
+
+#### Length lemma
+
+We will prove that for any optimal encoding, if $f_x < f_y$, then $\ell_x \geq \ell_y$.
+
+Suppose for contradiction that $f_x < f_y$ and $\ell_x < \ell_y$. Then the overall length of all encoded $x$ and $y$ symbols in the document is $f_x \cdot \ell_x + f_y \cdot \ell_y$. However, since $f_y - f_x > 0$ and $\ell_y - \ell_x > 0$,
+$$
+\begin{align*}
+(f_y - f_x)(\ell_y - \ell_x) &> 0 \\
+f_x \cdot \ell_x + f_y \cdot \ell_y &> f_x \cdot \ell_y + f_y \cdot \ell_x
+\end{align*}
+$$
+so we can reach a *strictly* smaller encoded length just by swapping the lengths of $x$ and $y$, so the encoding could not have been optimal.
+
+#### Sibling lemma
+
+If $x, y$ are the two symbols with the lowest frequency, then there is an optimal tree $T$ where $x$ and $y$ are siblings.
+
+Suppose $T$ is optimal, then $x$ must have the longest encoding (by the length lemma above). Due to optimality, $x$ must have a sibling (???). If that sibling $z$ is not $y$, then swap it with $y$. This does not change the length of the encoding, since if $z$ was a sibling to $x$ then it must have also had the same frequency as $y$. (?) Thus we have found an optimal tree where $x$ and $y$ are siblings.
+
+#### Proof of optimality
+
+Suppose $x, y$ are the symbols with the lowest frequency, so the algorithm combines them in its first step, let $H$ be the Huffman tree produced. Let $T$ be an optimal tree where $x$ and $y$ are siblings, we know from above that this is possible. $H'$ and $T'$ are $H$ and $T$ but treating $xy$ as one symbol with frequency $f_x + f_y$.
+
+[...]

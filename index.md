@@ -6,4 +6,6 @@ Fall 2020-2021 session, taught by [Nisarg Shah](https://www.cs.toronto.edu/~nisa
 
 1. [Divide and Conquer Algorithms](01 divide and conquer)
 2. [Greedy Algorithms](02 greedy algorithms)
+3. [Dynamic Programming](03 dynamic programming)
+4. [Network Flow](04 network flow)
 
