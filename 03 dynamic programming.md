@@ -55,6 +55,7 @@ Suppose $OPT$ is an optimal solution.
 Suppose job $k$ is in $OPT$, then incompatible jobs are not, so $p[k] + 1, ..., k-1 \notin OPT$, so some optimal subset of $\curlies{1, ..., p[k]}$ is in $OPT$. If job $k$ isn't in $OPT$, then we need to look for an optimal subset of $\curlies{1, ..., k-1}$. Notice that in both of these situations, we need to solve the problem for a prefix of our ordering.
 
 Suppose $OPT(j)$ is the maximum total weight of compatible jobs from $\curlies{1, ..., j} \subseteq J$, so it's the weight of the solution for the prefix up to $j$. Then, rewriting our logic above,
+
 $$
 OPT(j) = \begin{cases}
 0 & \text{if } j = 0 \\
@@ -126,6 +127,7 @@ def bottom_up_opt(J):
 ### Augmenting to find the optimal solution
 
 The algorithms above present the optimal value, i.e. the maximum total weight of the schedule. However, to find the schedule itself, we just need to augment our algorithm to return the subsets it chooses as well, according to the following recursive equation for the solution $S(j)$ for $1, ..., j$
+
 $$
 S(j) = \begin{cases}
 \emptyset & \text{if } j = 0 \\
@@ -133,17 +135,90 @@ S(j - 1) & \text{if } j > 0 \text{ and } OPT(j - 1) \geq w_j + OPT(p[j]) \\
 \curlies{j} \cup S(p[j]) & \text{if } j > 0 \text{ and } OPT(j - 1) < w_j + OPT(p[j])
 \end{cases}
 $$
+
 We can precompute which decision to make ($S(j) = S(j - 1)$ vs $S(j) = \curlies j \cup S(p[k])$) while we are calculating $OPT(j)$, and then make those decisions later when we are finding the actual solution, in order to save memory during the computation of $S(j)$.
 
 ## Knapsack Problem
 
+Suppose we have items $I = \curlies{1, ..., n}$ with values $v_i > 0$ and weights $w_i > 0$. We have a knapsack with weight capacity $W$. Assume that each $v_i, w_i$ and $W$ are all integers. We want to find a subset of $I$ that fits in the knapsack (has total weight at most $W$) that has the greatest total value.
 
+### Weight-based dynamic programming approach
+
+Suppose $OPT(i, W)$ is the maximum value we can pack with a knapsack of capacity $W$ and using only the items $1, ..., i$. Then the maximum value for the entire problem is $OPT(n, W)$, so we want to compute this.
+
+Consider an item $i$. if $w_i > w$, then we cannot pack it, so our solution must be $OPT(i-1, w)$. If $w_i \leq w$, then $i$ may or may not be chosen. If it is chosen, then the best value is $v_i + OPT(i-1, w - w_i)$, since we include it then make the best packing with the rest of our space. If we do not choose it, then once again we consider the preceeding items, so the best value is $OPT(i-1, w_i)$. This creates the Bellman equation:
+
+$$
+OPT(i, W) = \begin{cases}
+0 & \text{if } i = 0 \\
+OPT(i-1, W) & \text{if } w_i > W \\
+\max\curlies{OPT(i-1, W), v_i + OPT(i-1, W-w_i)} & \text{if } w_i \leq W
+\end{cases}
+$$
+
+Since we assumed $W$ is an integer, we know that $OPT$ might be called with $1, ..., n$ in its first argument and $1, ..., W$ in its second argument. This means that a dynamic programming algorithm based on our Bellman equation is bounded at $\BigO(nW)$ time. This is pseudo-polynomial time, but if $W$ is bounded to be a polynomial function of $n$, then it is polynomial time.
+
+### Value-based dynamic programming approach
+
+Suppose $OPT(i, v)$ is the minimum capacity needed to pack a total value of at least $v$ using only the items $1, ..., i$. Then, we can rephrase our old goal (find $OPT(n, W)$) as wanting to compute
+
+$$
+\max\curlies{v \in \Z: OPT(i, v) \leq W}
+$$
+
+i.e. the greatest value we can get while staying within the weight constraint.
+
+For a given $V$, we want to minimize $OPT(i, v)$. If $v \leq 0$, then we do not need any capacity to pack it. If $v > 0$ but $i = 0$, then we cannot pack $v$, so we will say our answer is $\infty$. Otherwise, either $i$ is in the minimum-weight $v$ packing, in which case, the weight is $w_i + OPT(i-1, v-v_i)$ since we want to minimize packing the rest of the value. If $i$ is not in the minimum weight packing, then we want to pack the same value with the preceeding items, so the minimum weight is $OPT(i-1, v)$. Then we can write the Bellman equation:
+$$
+OPT(i, v) = \begin{cases}
+0 & \text{if } v \leq 0 \\
+\infty & \text{if } i = 0, v \geq 0 \\
+\min\curlies{w_i + OPT(i-1, v-v_i), OPT(i-1, v)} & \text{if } i > 0, v > 0
+\end{cases}
+$$
+By similar logic to above, a dynamic programming algorithm based on this Bellman equation has running time $\BigO(nV)$, where $\ds V = \sum_{i \in I} v_i$ is an upper bound on the maximum possible value.
 
 ## Single-Source Shortest Paths
 
+Given a directed graph $G = (V, E)$ with edge lengths $\ell_e = \ell_{vw}$ for each edge $e = (v, w) \in E$ as well as a source vertex $s \in V$, we want to calculate the shortest path from $s$ to each vertex $v \in V$.
+
+When $\ell_e$ is always nonnegative, then this can be done using Djikstra's algorithm. However, when edge lengths can be negative, the problem gets trickier. Consider a cycle with negative total length. This can be traversed arbitrarily many times, decreasing the path length an arbitary amount, so "shortest paths" are no longer even well-defined.
+
+If there are no negative-length cycles, then there is always a shortest path that has no cycles, since a path with a cycle can be removed without increasing the path length.
+
+### Optimal substructure
+
+This problem has optimal substructure, because sub-paths must be shortest in order for the entire path to be the shortest. Consider a path $P$ from $s$ to $u$. Suppose $t$ is the last vertex in $P$ before $u$, then $P$ involves a path from $s$ to $t$. This must be the shortest path, since if it there were a shorter path $T$ from $s$ to $t$, then $T + (t, u)$ would be shorter than $P$, but $P$ is a shortest path.
+
+Let $OPT(u, i)$ be the shortest path from $s$ to $u$ using at most $i$ edges. If this path is shorter than $i$, i.e. it uses at most $i-1$ edges, then $OPT(u, i) = OPT(u, i-1)$. If it uses $i$ edges, then it is a shortest path from $s$ to a preceding node $t$, then it follows the edge to $u$, so it has length $\ds OPT(u, i) = \min_{t \in V, (t, u) \in E} (OPT(t, i-1) + \ell_{tu})$. Thus, the Bellman equation for the path is
+$$
+OPT(u, i) = \begin{cases}
+0  & \text{if } i = 0, u = s \\
+\infty  & \text{if } i = 0, u \neq s \\
+\min\curlies{OPT(u, i-1), \ds \min_{t \in V, (t, u) \in E} (OPT(t, i-1) + \ell_{tu})} & \text{otherwise}
+\end{cases}
+$$
+A dynamic programming algorithm based on this approach would recurse $\BigO(n^2)$ times, and each call would take $\BigO(n)$ time, so the algorithm would have a running time in $\BigO(n^3)$.
+
+### Maximum length paths
+
+Analogously to the work above, if there are no positive-length cycles, we can similarly compute maximum length paths. If there are positive cycles and we are only interested in simple paths, then this problem becomes NP-hard. A special case is the Hamiltonian path problem.
+
+## All Pairs Shortest Paths
+
+Suppose we have a similar setup as above - a directed graph $G = (V, E)$ with edge lengths and no negative cycles. This time, we want to compute the lengths of the shortest pahts from all vertices $s$ to all other vertices $v$.
+
+A simple solution would be to run our single-source shortest paths algorithm starting from each node. Without any modification, this takes $\BigO(n^4)$ time. However, we can modify it to take $\BigO(n^3)$ time:
+
 [...]
 
-## Traveling Salesman
+## Chain Matrix Product
+
+[...]
+
+## Edit distance
+
+## Traveling Salesperson
 
 Given a directed graph $G = (V, E)$ where 
 

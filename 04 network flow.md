@@ -61,4 +61,29 @@ To make this more concrete, we can define a **residual graph** $G_f$ with the sa
 
 Network flow began as a study of finding min cuts, so that the US could find out how to efficiently disable the Soviet rail network in the 1930s in case of war
 
-### Integrality mat
+### Integrality matrix
+
+## Circulation
+
+Given a directed graph $G = (V, E)$, edge capacities $c: E \to \N$, and node demands $d: V \to Z$, we want a circulation $f: E \to \N$ satisfying:
+
+- for each $e \in E$, $0 \leq f(e) \leq c(e)$
+- for each $v \in V$, $\ds \sum_{e \text{ entering } v} f(e) - \sum_{e \text{ leaving } v} f(e) = d(v)$
+
+### Network flow formulation
+
+We can equivalently formulate a circulation problem as a network flow problem. We do this by considering a new graph $G' = (V', E')$ which is $G$ but with a source node $s$ and target node $t$ added. $s$ is adjacent to every node in $G$ that has a negative demand, and $t$ is adjacent to every node in $G$ that has positive demand. Then we want the value of the flow to be $\ds \sum_{v \in V : d(v) > 0} d(v) = \sum_{v \in V : d(v) < 0} -d(v)$ in order to solve the original circulation problem.
+
+## Circulation with Lower Bounds
+
+Consider the circulation problem, however with added lower bound constraints - for every $e \in E$, $\ell(e) \leq f(e) \leq c(e)$.
+
+We can convert this to a normal circulation problem by doing the following for each edge $e = (u, v)$:
+
+- $c(e) \gets c(e) - \ell(e)$
+- $d(u) \gets d(u) + \ell(e)$
+- $d(v) \gets d(v) - \ell(e)$
+- forget about $\ell(e)$
+
+![lower bound circulation to normal circulation.png](lower bound circulation to normal circulation.png)
+
