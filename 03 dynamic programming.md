@@ -63,7 +63,6 @@ OPT(j) = \begin{cases}
 \end{cases}
 $$
 
-
 This is the **Bellman equation** for the problem.
 
 ### Brute force algorithm
@@ -169,6 +168,7 @@ $$
 i.e. the greatest value we can get while staying within the weight constraint.
 
 For a given $V$, we want to minimize $OPT(i, v)$. If $v \leq 0$, then we do not need any capacity to pack it. If $v > 0$ but $i = 0$, then we cannot pack $v$, so we will say our answer is $\infty$. Otherwise, either $i$ is in the minimum-weight $v$ packing, in which case, the weight is $w_i + OPT(i-1, v-v_i)$ since we want to minimize packing the rest of the value. If $i$ is not in the minimum weight packing, then we want to pack the same value with the preceeding items, so the minimum weight is $OPT(i-1, v)$. Then we can write the Bellman equation:
+
 $$
 OPT(i, v) = \begin{cases}
 0 & \text{if } v \leq 0 \\
@@ -176,6 +176,7 @@ OPT(i, v) = \begin{cases}
 \min\curlies{w_i + OPT(i-1, v-v_i), OPT(i-1, v)} & \text{if } i > 0, v > 0
 \end{cases}
 $$
+
 By similar logic to above, a dynamic programming algorithm based on this Bellman equation has running time $\BigO(nV)$, where $\ds V = \sum_{i \in I} v_i$ is an upper bound on the maximum possible value.
 
 ## Single-Source Shortest Paths
@@ -191,6 +192,7 @@ If there are no negative-length cycles, then there is always a shortest path tha
 This problem has optimal substructure, because sub-paths must be shortest in order for the entire path to be the shortest. Consider a path $P$ from $s$ to $u$. Suppose $t$ is the last vertex in $P$ before $u$, then $P$ involves a path from $s$ to $t$. This must be the shortest path, since if it there were a shorter path $T$ from $s$ to $t$, then $T + (t, u)$ would be shorter than $P$, but $P$ is a shortest path.
 
 Let $OPT(u, i)$ be the shortest path from $s$ to $u$ using at most $i$ edges. If this path is shorter than $i$, i.e. it uses at most $i-1$ edges, then $OPT(u, i) = OPT(u, i-1)$. If it uses $i$ edges, then it is a shortest path from $s$ to a preceding node $t$, then it follows the edge to $u$, so it has length $\ds OPT(u, i) = \min_{t \in V, (t, u) \in E} (OPT(t, i-1) + \ell_{tu})$. Thus, the Bellman equation for the path is
+
 $$
 OPT(u, i) = \begin{cases}
 0  & \text{if } i = 0, u = s \\
@@ -198,6 +200,7 @@ OPT(u, i) = \begin{cases}
 \min\curlies{OPT(u, i-1), \ds \min_{t \in V, (t, u) \in E} (OPT(t, i-1) + \ell_{tu})} & \text{otherwise}
 \end{cases}
 $$
+
 A dynamic programming algorithm based on this approach would recurse $\BigO(n^2)$ times, and each call would take $\BigO(n)$ time, so the algorithm would have a running time in $\BigO(n^3)$.
 
 ### Maximum length paths
@@ -214,9 +217,30 @@ A simple solution would be to run our single-source shortest paths algorithm sta
 
 ## Chain Matrix Product
 
-[...]
+Given matrices $M_1, ..., M_n$ where the dimension of $M_i$ is $d_{i-1} \times d_i$, we want to compute $M_1 \cdot ... \cdot M_n$ as fast as possible. Since products of matrices are associative, this means that we want to choose the best order to multiply adjacent pairs of matrices, so we can discard $M_1, ..., M_n$ and only pay attention to $d_0, ..., d_n$.
+
+Dynamic programming is not a bad approach for this problem because it has the optimal substructure property.
+
+If $A$ has dimension $p \times q$ and $B$ has dimension $q \times r$, then computing $A \times B$ requires $p \times q \times r$ operations.
+
+If $OPT(i, j)$ is the minimum number of operations needded to compute $M_i \cdot ... \cdot M_j$, we can construct the Bellman equation:
+
+$$
+OPT(i, j) = \begin{cases}
+0 & \text{if } i = j \\
+\min\curlies{OPT(i, k) + OPT(k+1, j) + d_{i-1}d_kd_j : i \leq k < j} & \text{if } i < j
+\end{cases}
+$$
+
+This means that there are $\BigO(n^2)$ function calls, and each function call takes $\BigO(n)$ time, so the total running time is $\BigO(n^3)$.
+
+The best algorithm to solve this problem right now is not a dynamic programming algorithm, it is Hu & Shing's algorithm.
 
 ## Edit distance
+
+Suppose we have two strings $X = x_1...x_m$ and $Y = y_1...y_n$, and we can delete or replace symbols of either string, but with costs - for symbols $a$ and $b$ we have a $d(a)$ of deleting $a$ and $r(a, b) = r(b, a)$ of replacing $a$ with $b$ or $b$ with $a$. We want to compute the minimum total cost of making the strings match.
+
+[...]
 
 ## Traveling Salesperson
 

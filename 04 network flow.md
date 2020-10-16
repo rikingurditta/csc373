@@ -22,9 +22,8 @@ $$
 f^{in}(v) = \sum_{e=(x,v)} f(e) = \sum_{e=(v,y)} f(e) = f^{out}(v)
 $$
 
-3. 
-
 We define the value of the flow $v(f)$ as 
+
 $$
 v(f) = f^{out}(s) = f^{in}(t)
 $$
@@ -47,7 +46,9 @@ To come up with an algorithm where we can reverse bad decisions, we will "revers
 
 In concrete terms, this results in reducing the flow between $u$ and $v$ by $10$, but we can think of it as reversing the direction of the flow.
 
-To make this more concrete, we can define a **residual graph** $G_f$ with the same vertices as $G$, but with a reverse of each edge added. If $e = (u, v) \in E$, then $E_f$ contains both $e$ and $e^{rev} = (v, u)$. Edges in $E \subseteq E_f$ have the same capacity, but reversed edges $e^{rev}$ have capacity $f(e)$
+To make this more concrete, we can define a **residual graph** $G_f$ with the same vertices as $G$, but with a reverse of each edge added. If $e = (u, v) \in E$, then $E_f$ contains both $e$ and $e^{rev} = (v, u)$. Edges in $E \subseteq E_f$ have the same capacity, but reversed edges $e^{rev}$ have capacity $f(e)$.
+
+We can convert a solution on a residual graph to a solution to the original problem by using $f(e) - f(e^{ref})$ as the flow for each $e \in E$.
 
 ## Ford-Fulkerson Algorithm
 
