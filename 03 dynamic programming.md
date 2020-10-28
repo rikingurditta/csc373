@@ -244,6 +244,34 @@ Suppose we have two strings $X = x_1...x_m$ and $Y = y_1...y_n$, and we can dele
 
 ## Traveling Salesperson
 
-Given a directed graph $G = (V, E)$ where 
+Given a directed graph $G = (V, E)$ with distances $d_{i,j}$ for each edge $(i, j) \in E$, find the minimum total distance of a Hamiltonian cycle, i.e. the minimum distance that needs to be traveled to start at a node $v$, visit every node exactly once, and return to $v$.
 
-[...]
+For convenience, we will consider $V = \curlies{1, ..., n}$.
+
+Note that it does not matter which node we start at! We will be travelling in a cycle through every node in the graph, so we can start at any node in this cycle.
+
+Suppose we start at node $v_1 = 1$, then we want to find the ordering $(v_2, ..., v_n)$ of the rest of the nodes $\curlies{2, ..., n}$ that minimizes the total distance
+
+$$
+d_{v_1v_2} + d_{v_2v_3} + ... + d_{v_{n-1}v_n} + d_{v_nv_1}
+$$
+
+Checking every possible ordering means checking $(n-1)!$ different cycles. $n! \in \BigO((n/e)^n)$, so this is really bad.
+
+### Dynamic programming approach
+
+We define $OPT(S, c)$ to be the minimum total travel distance of starting at node $1$, visiting every node in $S$ exactly once, and ending at $c \in S$.
+
+The solution to our problem will be
+
+$$
+\min_{2 \leq c \leq n} OPT(\curlies{2, ..., n}, c) + d_{c1}
+$$
+
+We can write a bellman equation for it:
+
+$$
+OPT(S, c) = \min_{m \in S \setminus \curlies c} OPT(S \setminus \curlies c, m) + d_{mc}
+$$
+
+We calculate $OPT(S, c)$ for every subset $S \subseteq \curlies{2, ..., n}$ and every $c \in \curlies{2, ..., n}$. There are $2^{n-1}$ subsets of $\curlies{2, ..., n}$ and $n-1$ choices of $c$, and each call takes time linear in $\abs S \in \BigO(n)$, so in total this approach takes $\BigO(n^2 2^n)$ time. This is still not polynomial time, but it is much better than $\BigO((n/e)^n)$ time! This problem is NP-complete, so it is not known whether a polynomial time algorithm is even possible.
