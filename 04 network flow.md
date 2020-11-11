@@ -106,14 +106,17 @@ This is *pseudo-polynomial time*, since $C$ can be exponentially large in the in
 An **$s$-$t$ cut** is a partition $(A, B)$ of $V$ (aka $A \sqcup B = V$) where $s \in A$ and $t \in B$.
 
 Its **capacity** $cap(A, B)$ is the sum of capacities of edges leaving $A$, i.e.
+
 $$
 cap(A, B) = \sum_{e = \text{ leaving } A} c(u, v)
 $$
+
 For any flow $f$ and any $s$-$t$ cut $(A, B)$, $v(f) = f^{out}(A) - f^{in}(A)$. This is because
 
 [...]
 
 Furthermore, for any flow $f$ and $s$-$t$ cut $(A, B)$, $v(f) \leq cap(A, B)$. This is because
+
 $$
 \begin{align*}
 v(f) &= f^{out}(A) - f^{in}(A) \\
@@ -123,6 +126,7 @@ v(f) &= f^{out}(A) - f^{in}(A) \\
 &= cap(A, B)
 \end{align*}
 $$
+
 This means that the maximum value of any flow is less than or equal to the minimum capacity of any $s$-$t$ cut. Thus, if we find a flow whose value is the capacity of a cut, then we know that the flow is optimal.
 
 #### Ford-Fulkerson finds a flow that is the capacity of a cut
@@ -134,6 +138,7 @@ Suppose $e = (u, v)$ is an edge from $u \in A$ to $v \in B$ in $G$. If $c(e) - f
 Suppose $e = (v, u)$ is an edge from $v \in B$ to $u \in A$ in $G$. If $f(e) > 0$, then $e^{rev} = (u, v)$ would be in the residual graph, so once again $v$ would be reachable from $s$, again a contradiction.
 
 Thus, for each edge $e_o$ from $A$ to $B$, $f(e_o) = c(e_o)$, and for each edge $e_i$ from $B$ to $A$, $f(e_i) = 0$. Thus,
+
 $$
 \begin{align*}
 v(f) &= f^{out}(A) - f^{in}(A) \\
