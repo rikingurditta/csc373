@@ -46,14 +46,14 @@ This algorithm does not work because it makes irrevocable decisions, so it canno
 
 To come up with an algorithm where we can reverse bad decisions, we will "reverse" flow in the following way:
 
-![image-20201001142201843](/Users/rikin/Library/Application Support/typora-user-images/image-20201001142201843.png)
+![residual graph.png](residual graph.png)
 
 In concrete terms, this results in reducing the flow between $u$ and $v$ by $10$, but we can think of it as reversing the direction of the flow.
 
 To make this more concrete, we can define a **residual graph** $G_f = (V, E_f)$ with the same vertices as $G$, but with $E_f$ containing:
 
 - **forward edges**, which are edges $e \in E$ where $c(e) - f(e) > 0$
-  - their capacity is $c_f = c(e) - f(e)$
+  - their capacity is $c_f(e) = c(e) - f(e)$
   - $e \in E_f$ represents how much flow can add to $e \in E$
 - **backward edges**, which are edges $e^{rev} = (v, u)$ where $e = (u, v) \in E$ and $f(e) > 0$
   - their capacity is $c_f(e) = f(e)$

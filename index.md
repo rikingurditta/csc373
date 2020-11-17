@@ -9,4 +9,5 @@ Fall 2020-2021 session, taught by [Nisarg Shah](https://www.cs.toronto.edu/~nisa
 3. [Dynamic Programming](03 dynamic programming)
 4. [Network Flow](04 network flow)
 5. [Linear Programming](05 linear programming)
+6. [Computational Complexity](05 computational complexity)
 
