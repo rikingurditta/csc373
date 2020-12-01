@@ -51,7 +51,7 @@ Suppose we have a problem $A$ where:
 
 Then we say **$A$ is $\NP$-complete**.
 
-### Showing $\NP$-completeness practically
+### Showing $\mathcal{NP}$-completeness practically
 
 Note that we do not need to show the second condition in full generality every time we prove that a problem is $\NP$-complete. Suppose $A \in \NP$ and there is an $\NP$-complete problem $Y$ where $Y \prd A$. Then if $X \in \NP$, then $X \prd Y \prd A$, so $X \prd A$. This holds for all $X \in \NP$, so $A$ is $\NP$-complete.
 
