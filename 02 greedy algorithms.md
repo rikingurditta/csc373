@@ -146,6 +146,7 @@ If a schedule with no idle time has at least one inversion, then it has an inver
 #### Fixing inversions
 
 Consider swapping $i$ and $j$, changing the lateness $L$ to $L'$ and the individual latenesses $\ell_j$ and $\ell_j$ to $\ell_i'$ and $\ell_j'$ and similarly with the finish times. Then $f_i = f_j'$, so
+
 $$
 \ell_j' = f_j' - d_j = f_i - d_j \leq f_i - d_i = \ell_i
 $$
@@ -159,6 +160,7 @@ L' = \max\curlies{\ell_i', \ell_j', \max_{k \notin\curlies{i, j}} \ell_k'}
 $$
 
 Since we did not reschedule any job $k \notin \curlies{i, j}$, $\ell_k = \ell_k'$, so
+
 $$
 \begin{align*}
 L' &= \max\curlies{\ell_i', \ell_j', \max_{k \notin \curlies{i, j}} \ell_k} \\
@@ -168,6 +170,7 @@ L' &= \max\curlies{\ell_i', \ell_j', \max_{k \notin \curlies{i, j}} \ell_k} \\
 &= L
 \end{align*}
 $$
+
 So the lateness does not increase, but the number of inversions has decreased.
 
 #### Proof of optimality
@@ -201,12 +204,14 @@ Suppose $f_x$ and $\ell_x$ are the frequency and length of the code for a symbol
 We will prove that for any optimal encoding, if $f_x < f_y$, then $\ell_x \geq \ell_y$.
 
 Suppose for contradiction that $f_x < f_y$ and $\ell_x < \ell_y$. Then the overall length of all encoded $x$ and $y$ symbols in the document is $f_x \cdot \ell_x + f_y \cdot \ell_y$. However, since $f_y - f_x > 0$ and $\ell_y - \ell_x > 0$,
+
 $$
 \begin{align*}
 (f_y - f_x)(\ell_y - \ell_x) &> 0 \\
 f_x \cdot \ell_x + f_y \cdot \ell_y &> f_x \cdot \ell_y + f_y \cdot \ell_x
 \end{align*}
 $$
+
 so we can reach a *strictly* smaller encoded length just by swapping the lengths of $x$ and $y$, so the encoding could not have been optimal.
 
 #### Sibling lemma

@@ -110,7 +110,7 @@ An **$s$-$t$ cut** is a partition $(A, B)$ of $V$ (aka $A \sqcup B = V$) where $
 Its **capacity** $cap(A, B)$ is the sum of capacities of edges leaving $A$, i.e.
 
 $$
-cap(A, B) = \sum_{e = \text{ leaving } A} c(u, v)
+cap(A, B) = \sum_{e \text{ leaving } A} c(e)
 $$
 
 For any flow $f$ and any $s$-$t$ cut $(A, B)$, $v(f) = f^{out}(A) - f^{in}(A)$. This is because
